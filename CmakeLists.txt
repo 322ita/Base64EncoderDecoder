@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.10)
+project(Base64)
+
+
+# Set C++ standard (wxWidgets works well with C++11 or newer)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set wxWidgets configuration
+set(wxWidgets_ROOT_DIR "C:/librerie/wxwidgets")
+set(wxWidgets_LIB_DIR "${wxWidgets_ROOT_DIR}/lib/vc_x64_lib")
+set(wxWidgets_CONFIGURATION "mswu")
+
+# Add executable
+add_executable(Base64 WIN32 main.cpp include/base64.cpp)
+
+# Manual wxWidgets configuration
+target_include_directories(Base64 PRIVATE 
+    "${wxWidgets_ROOT_DIR}/include"
+    "${wxWidgets_ROOT_DIR}/include/msvc"
+    "${wxWidgets_LIB_DIR}/mswu"
+    "{CMAKE_SOURCE_DIR}/include"
+)
+
+# Add preprocessor definitions
+target_compile_definitions(Base64 PRIVATE
+    __WXMSW__
+    _UNICODE
+    UNICODE
+    wxUSE_GUI=1
+)
+
+target_link_directories(Base64 PRIVATE "${wxWidgets_LIB_DIR}")
+
+# Link wxWidgets libraries manually
+target_link_libraries(Base64 
+    wxmsw32u_core.lib
+    wxbase32u.lib
+    comctl32.lib
+    rpcrt4.lib
+    winmm.lib
+    advapi32.lib
+    wsock32.lib
+)
