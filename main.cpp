@@ -1,6 +1,7 @@
 #include <wx/wx.h>
 #include <wx/clipbrd.h>
 #include "include/base64.h"
+
 enum
 {
     ID_Hello = 1
@@ -47,7 +48,7 @@ bool MyApp::OnInit()
  
 MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "Base64 Encoder/Decoder")
 {
- 
+
     wxMenu *menuHelp = new wxMenu;
     menuHelp->Append(wxID_ABOUT);
     menuHelp->Append(wxID_EXIT, "&Exit");
@@ -59,15 +60,14 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "Base64 Encoder/Decoder")
     
     wxArrayString choices;
     choices.Add("Decode");
-    choices.Add("Encode");
-
-    wxPanel *panel = new wxPanel(this, wxID_ANY);
-    wxTextCtrl *textctrl = new wxTextCtrl(panel, wxID_ANY, "", wxPoint(20, 20), wxSize(740, 50), wxTE_MULTILINE);
-    wxChoice *choice = new wxChoice(panel, wxID_ANY, wxPoint(350, 80), wxSize(100, 30), choices);
-    wxButton *button = new wxButton(panel, wxID_ANY, "Process", wxPoint(520, 80), wxSize(100, 30));
-    wxButton *cpybutton = new wxButton(panel, wxID_ANY, "Copy", wxPoint(660, 80), wxSize(100, 30));
-    wxStaticText *resultLabel = new wxStaticText(panel, wxID_ANY, "Result:", wxPoint(20, 120), wxDefaultSize, 
-    wxALIGN_LEFT, "resultLabel");
+    choices.Add("Encode");    wxPanel *panel = new wxPanel(this, wxID_ANY);
+    wxTextCtrl *textctrl = new wxTextCtrl(panel, wxID_ANY, "", wxPoint(20, 20), wxSize(740, 80), wxTE_MULTILINE | wxTE_WORDWRAP);
+    wxChoice *choice = new wxChoice(panel, wxID_ANY, wxPoint(350, 113), wxSize(100, 30), choices);
+    wxButton *button = new wxButton(panel, wxID_ANY, "Process", wxPoint(180, 110), wxSize(100, 30));
+    wxButton *cpybutton = new wxButton(panel, wxID_ANY, "Copy", wxPoint(520, 110), wxSize(100, 30));
+    wxStaticText *label = new wxStaticText(panel, wxID_ANY, "Result:", wxPoint(20, 140));
+    wxTextCtrl *resultLabel = new wxTextCtrl(panel, wxID_ANY, "", wxPoint(20, 160), wxSize(740, 360), wxTE_MULTILINE | wxTE_READONLY | wxTE_WORDWRAP);
+    
     
     button->Bind(wxEVT_BUTTON, [textctrl, choice, choices, resultLabel](wxCommandEvent& event) {
         wxString input = textctrl->GetValue();
@@ -78,11 +78,10 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "Base64 Encoder/Decoder")
         } else if (choice->GetSelection() == choices.Index("Encode")) {
             result = base64_encode(input.ToStdString());
         }
-        resultLabel->SetLabel("Result: " + result);
-    });
-
-    cpybutton->Bind(wxEVT_BUTTON, [resultLabel](wxCommandEvent& event) {
-        wxString result = resultLabel->GetLabel().AfterFirst(':').Trim(true).Trim(false);
+        resultLabel->SetValue(result);
+        
+    });    cpybutton->Bind(wxEVT_BUTTON, [resultLabel](wxCommandEvent& event) {
+        wxString result = resultLabel->GetValue().AfterFirst(':').Trim(true).Trim(false);
         if (wxTheClipboard->Open()) {
             wxTheClipboard->SetData(new wxTextDataObject(result));
             wxTheClipboard->Close();
